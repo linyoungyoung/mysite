@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态首页</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">-->
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/zTree/js/jquery.ztree.core.js"></script>
+</head>
+<body>
+
+<form action="{:url('@index/power/change');}" method="POST">
+
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">权限名</label>
+        <div class="col-sm-10">
+            <input type="hidden" name="id"  value="{$info.id}"/>
+            <input type="text" class="form-control" placeholder=""  value="{$info.name}" name="power_name" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">路由</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" placeholder=""  value="{$info.route}" name="route"/>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-lg-2">上级分类</label>
+        <div class="col-lg-10">
+            <input type="text" name="parent_name" value="" class="form-control" />
+            <input type="hidden" name="parent_id" value="{$info.parent_id}"/>
+            <div class="zTreeDemoBackground left">
+                <ul id="treeDemo" class="ztree"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="zTreeDemoBackground left">
+            <ul id="treeDemo" class="ztree"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Sign in</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+
+    var setting = {
+        data:{
+            // id pId name open
+            // 数据表对应的字段名
+            key: {
+                pId: 'pid'
+//                    title: 'name'
+            },
+            // 使用简单数据模型
+            simpleData: {
+                enable: true
+            }
+        },
+        callback:{
+            // 绑定一个事件到,点击事件之前
+            beforeClick: function(treeId, treeNode, clickFlag){
+                // 如果节点设置了不能点属性,那么就不继续往下执行
+                if(treeNode.noclick == true){
+                    return false;
+                }
+            },
+            onClick: function(event, treeId, treeNode, clickFlag){
+                // treeId是装节点的元素的id属性
+                var _id = treeNode.id;
+                // 获取到节点的name属性
+                var _name =treeNode.name;
+
+                // 将节点的属性值放到输入框
+                $('input[name="parent_name"]').val(_name);
+                $('input[name="parent_id"]').val(_id);
+            }
+        }
+    };
+    // 申明节点  通过PHP传递过来的JSON数据
+    var zNodes = {$rows};
+    // 往节点中添加一个一级分类的节点
+    var _oneCate = {
+        id: -1,
+        name: '一级分类',
+        pId: 0,
+        checked: true
+    };
+    zNodes.unshift(_oneCate);
+
+    // 页面加载完之后
+    $(function(){
+        // 初始化zTree,将他绑定到一个元素上
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+        // 为了控制某些节点默认被选中  获取当前的zTree
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        // 获取哪一个应该被选中
+        var _id = "{$info.parent_id}";
+        if(_id == 0){
+            _id = -1;
+        }
+        // 通过id属性,选择到一个节点
+        var node = treeObj.getNodeByParam('id', _id);
+        // 让节点被选中
+        treeObj.selectNode(node);
+    });
+
+</script>
+</body>
+</html>

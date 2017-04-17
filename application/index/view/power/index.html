@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态首页</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/treegrid/css/jquery.treegrid.css" type="text/css">
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/layer/skin/default/layer.css" type="text/css">
+    <!--treegrid分类树-->
+    <!--<link rel="stylesheet" href="/static/tree_grid/jqwidgets/styles/jqx.base.css" type="text/css" />-->
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/treegrid/js/jquery.treegrid.js"></script>
+    <script src="/static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+
+    <!--treegrid分类树-->
+    <!--<script type="text/javascript" src="/static/tree_grid/scripts/jquery-1.11.1.min.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxcore.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxdata.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxbuttons.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxscrollbar.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxdatatable.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/jqwidgets/jqxtreegrid.js"></script>-->
+    <!--<script type="text/javascript" src="/static/tree_grid/scripts/demos.js"></script>-->
+</head>
+<body>
+<a class="btn" href="{:url('@index/power/create');}">新增权限</a>
+<table class="table tree">
+    <thead>
+    <tr>
+        <th>编号</th>
+        <th>名称</th>
+        <th>路由</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {volist name="list" id="row"}
+        <tr class="treegrid-{$row.id} {if condition="$row['parent_id'] neq 0"} treegrid-parent-{$row.parent_id}{/if}">
+        <td>{$row.id}</td>
+        <td>
+            {for start="1" end="$row['level']"}----{/for}
+            {$row.name}
+        </td>
+    <td>{$row.route}</td>
+        <td>
+            <a href="{:Url('index/power/change',['id'=>$row.id])}" class="btn btn-xs btn-success">编辑</a>
+            <a href="javascript:;" data-uri="{:Url('index/power/del',['id'=>$row.id])}" onclick="deleteConfrim($(this))" class="btn btn-xs btn-danger">删除</a>
+        </td>
+        </tr>
+    {/volist}
+    </tbody>
+</table>
+<script type="text/javascript">
+    $('.tree').treegrid();
+</script>
+<script type="text/javascript">
+
+    function deleteConfrim(obj){
+        layer.confirm('你确定要删除吗?', {
+            btn: ['确定','不要了'] //按钮
+        }, function(){
+            // 点击确定之后执行的回调
+            var _uri = obj.attr('data-uri');
+            location.href = _uri;
+        }, function() {
+            // 不要了之后执行的回调
+        })
+    }
+</script>
+
+
+</body>
+</html>

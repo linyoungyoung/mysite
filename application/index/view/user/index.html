@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态首页</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<a class="btn" href="{:url('@index/user/create');}">新增用户</a>
+<table class="table table-striped">
+    <tr>
+        <td>用户名</td>
+        <td>创建时间</td>
+        <td>超级管理员</td>
+        <td>管理员</td>
+        <td>锁状态</td>
+        <td>操作</td>
+    </tr>
+    {volist name='list' id='user'}
+    <tr>
+        <td>{$user.username}</td>
+        <td>{:date('Y-m-d H:i:s',$user.create_time)}</td>
+        <td>{$user.is_super}</td>
+        <td>{$user.is_admin}</td>
+        <td>{$user.lock}</td>
+        <td>
+            <a href={:url('index/user/change',"id=".$user.id."")}  class="btn btn-danger btn-xs">编辑</a>
+            <a href={:url('index/user/role',"id=".$user.id."")}  class="btn btn-success btn-xs">角色管理</a>
+        </td>
+    </tr>
+    {/volist}
+</table>
+{$list->render()}
+</body>
+</html>

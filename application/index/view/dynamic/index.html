@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态首页</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="/static/js/jquery-1.11.3.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="/static/layer/skin/default/layer.css" type="text/css">
+
+    <script src="/static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body>
+<a class="btn" href="{:url('@index/dynamic/create');}">新增动态</a>
+
+
+<table class="table">
+    <tr>
+        <td>编号</td>
+
+        <td>创建时间</td>
+        <td>创建人</td>
+        <td>操作</td>
+    </tr>
+    {volist name='list' id='new'}
+    <tr class="{$new.id}">
+        <td>{$new.id}</td>
+
+        <td>{$new.create_time}</td>
+        <td>{$new.user_id}</td>
+        <td>
+            <a href={:url('index/dynamic/show',"id=".$new.id."")}>详情</a>
+            <a href={:url('index/dynamic/set_top',"id=".$new.id."")}>置顶</a>
+            <a href={:url('index/dynamic/change',"id=".$new.id."")}>编辑</a>
+            <a href='javascript:;' onclick="del({$new.id})">删除</a>
+        </td>
+    </tr>
+    {/volist}
+</table>
+{$list->render()}
+</body>
+
+<script type="text/javascript">
+    function del(c_id){
+        layer.msg(c_id);
+        layer.confirm('确定要删除当前动态吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            go_url = "{:url('index/dynamic/del')}"
+            $.ajax({
+                type: 'POST',
+                url: go_url,
+                data: {
+                    'id': c_id,
+                },
+                //async:false,
+                dataType: 'json',
+                success:function(data){
+                    //layer.closeAll();
+                    console.log(data);
+                    $("."+c_id).remove();
+                    layer.msg(data.info)
+
+
+                },
+
+                error: function(){
+
+                },
+
+            })
+
+        }, function(){
+            //layer.msg('qx');
+        });
+
+    }
+</script>
+</html>

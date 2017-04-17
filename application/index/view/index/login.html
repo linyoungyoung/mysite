@@ -1,0 +1,187 @@
+﻿<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <title>superui框架</title>
+    <meta name="keywords" content="supershopui框架" />
+    <meta name="description" content="supershopui框架" />
+    <link href="/static/content/ui/css/layout.css" rel="stylesheet" />
+    <link href="/static/content/ui/css/login.css" rel="stylesheet"/>
+    <style>
+        .ibar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="login-bg">
+    <div class="main ">
+        <!--登录-->
+        <div class="login-dom login-max">
+            <div class="logo text-center">
+                <a href="#">
+                    <img src="/static/content/ui/img/logo.png" width="180px" height="180px" />
+                </a>
+            </div>
+            <div class="login container " id="login">
+                <p class="text-big text-center logo-color">
+                    同一个账号，连接一切
+                </p>
+
+                <p class="text-center margin-small-top logo-color text-small">
+                  SuperUI
+                </p>
+                <!--<form class="login-form" action="/index/auth/do_login.html" method="post" autocomplete="off">-->
+                    <div class="login-box border text-small" id="box">
+                        <div class="name border-bottom">
+                            <input type="text" placeholder="手机/邮箱/账号（随便填）" id="username" name="username" datatype="*" nullmsg="请填写帐号信息" />
+                        </div>
+                        <div class="pwd">
+                            <input type="password" placeholder="密码（随便填）" datatype="*" id="password" name="password" nullmsg="请填写帐号密码" />
+                        </div>
+
+                    </div>
+                <span class="msg"></span>
+                    <input type="submit" class="btn text-center login-btn" id="popup-submit" value="立即登录" />
+                    <div id="popup-captcha"></div>
+                <!--</form>-->
+                <div class="forget">
+                   
+                    <a href="#" class="forget-pwd text-small fl"> 忘记登录密码？</a><!--<a href="#" class="forget-new text-small fr" id="forget-new">注册账号</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="footer text-center text-small ie">
+            Copyright 2013-2016 版权所有 ©tzhsweet 2015-2018      <a href="#" target="_blank">粤ICP备16024545号-1</a>
+            <span class="margin-left margin-right">|</span>
+            <script src="#" language="JavaScript"></script>
+        </div>
+        <div class="popupDom">
+            <div class="popup text-default">
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="/static/content/ui/global/jQuery/jquery.min.js"></script>
+<script type="text/javascript">
+    function popup_msg(msg) {
+        $(".popup").html("" + msg + "");
+        $(".popupDom").animate({
+            "top": "0px"
+        }, 400);
+        setTimeout(function () {
+            $(".popupDom").animate({
+                "top": "-40px"
+            }, 400);
+        }, 2000);
+    }
+
+    /*动画（注册）*/
+    $(document).ready(function (e) {
+        // $("input[name=username]").focus();
+        // $('.login-form').Validform({
+        // 	ajaxPost: true,
+        // 	tiptype: function(msg) {
+        // 		if (msg) popup_msg('' + msg + '');
+        // 	},
+        // 	callback: function(ret) {
+        // 		popup_msg('' + ret.info + '');
+        // 		if (ret.status == 1) {
+        // 			if (ret.uc_user_synlogin) {
+        // 				$("body").append(ret.uc_user_synlogin);
+        // 			}
+        // 			setTimeout("window.location='" + ret.url + "'", 2000);
+        // 		}
+        // 	}
+        // })
+
+    });
+</script>
+
+<!-- 为使用方便，直接使用jquery.js库，如您代码中不需要，可以去掉 -->
+<!--<script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>-->
+<!-- 引入封装了failback的接口--initGeetest -->
+<script src="http://static.geetest.com/static/tools/gt.js"></script>
+<!--gee验证-->
+<script>
+    var handlerPopup = function (captchaObj) {
+        // 成功的回调
+        captchaObj.onSuccess(function () {
+            var validate = captchaObj.getValidate();
+            $.ajax({
+                url: "{:url('@index/login/login_gee');}", // 进行二次验证
+                type: "post",
+                dataType: "json",
+                data: {
+                    type: "pc",
+                    username: $('#username1').val(),
+                    password: $('#password1').val(),
+                    geetest_challenge: validate.geetest_challenge,
+                    geetest_validate: validate.geetest_validate,
+                    geetest_seccode: validate.geetest_seccode
+                },
+                success: function (data) {
+                    if (data && (data.status === "success")) {
+                        //验证成功后的执行 提交
+//                        alert(1)
+                        $user = $('#username').val();
+                        $psd = $('#password').val();
+                        //console.log($user,$psd);
+
+
+                        $.ajax({
+                            type: "POST",
+                            url: "{:url('@index/login/do_login');}",
+                            data: {username:$user, password:$psd},
+                            dataType: "json",
+                            success: function(data){
+                                d=parseJSON(data);
+                                if(d.status == 1){
+
+                                }else {
+                                    $('.msg').html('<span >'+d.info+'</span>');return;
+                                }
+                            }
+                        });
+                        //$(document.body).html('<h1>登录成功</h1>');
+                    } else {
+                        $(document.body).html('<h1>登录失败</h1>');
+                    }
+                }
+            });
+        });
+        $("#popup-submit").click(function () {
+            captchaObj.show();
+        });
+        // 将验证码加到id为captcha的元素里
+        captchaObj.appendTo("#popup-captcha");
+        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+    };
+    // 验证开始需要向网站主后台获取id，challenge，success（是否启用failback）
+    $.ajax({
+        url: "{:url('@index/login/verify');}",// 加随机数防止缓存
+        type: "get",
+        dataType: "json",
+        data:{
+            type:'pc',
+            t:(new Date()).getTime(),
+
+        },
+        success: function (data) {
+            // 使用initGeetest接口
+            // 参数1：配置参数
+            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+            initGeetest({
+                gt: data.gt,
+                challenge: data.challenge,
+                product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
+            }, handlerPopup);
+        },
+        error: function(){
+            alert('获取验证码错误！请刷新！');
+        }
+    });
+</script>
+</html>
